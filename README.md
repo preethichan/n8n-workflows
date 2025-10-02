@@ -62,7 +62,8 @@ Both workflows use Twilio for WhatsApp messaging, OpenWeatherMap for weather dat
 
 ### Workflow 2: WhatsApp Morning Briefing
 
-**File:** `WhatsApp Morning Briefing.json`
+**File:** `WhatsApp Morning Briefing.json`<img width="681" height="369" alt="Screenshot 2025-10-02 at 12 33 02 PM" src="https://github.com/user-attachments/assets/96549fc2-4271-40aa-a55f-3e54d4baa407" />
+
 
 **Description:** Automatically sends a daily morning briefing with weather and news to WhatsApp at 7:08 AM.
 
