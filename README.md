@@ -104,7 +104,7 @@ Before importing these workflows, ensure you have:
 
 Clone this repository or download the JSON files:
 ```bash
-git clone https://github.com/yourusername/whatsapp-n8n-workflows.git
+git clone https://github.com/preethichan/whatsapp-n8n-workflows.git
 ```
 
 ### Step 2: Import Workflows into n8n
