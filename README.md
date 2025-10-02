@@ -28,7 +28,9 @@ Both workflows use Twilio for WhatsApp messaging, OpenWeatherMap for weather dat
 
 ### Workflow 1: WhatsApp Interactive Bot
 
-**File:** `WhatsApp Interactive Bot.json`
+**File:** `WhatsApp Interactive Bot.json`<img width="1056" height="503" alt="Screenshot 2025-10-02 at 12 33 24 PM" src="https://github.com/user-attachments/assets/69d1164e-9f81-46fe-9a7d-b3b3ec9607f3" />
+
+
 
 **Description:** An interactive WhatsApp bot that responds to user messages with real-time weather and news information.
 
