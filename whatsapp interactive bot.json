@@ -1,0 +1,295 @@
+{
+  "name": "WhatsApp Interactive Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp-bot",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1104,
+        -848
+      ],
+      "id": "cf37cac7-2245-4f90-baa6-9e027c30ad19",
+      "name": "Webhook",
+      "webhookId": "d798aac3-7dec-4baf-b9c2-d1c2206871ca"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the incoming webhook data\nconst webhookData = $input.first().json;\n\n// Log to see what we're getting\nconsole.log(\"Webhook data:\", webhookData);\n\n// Safely extract message - handle different data types\nlet body = webhookData.Body || webhookData.body || '';\n\n// Convert to string if it's not already\nif (typeof body !== 'string') {\n  body = String(body);\n}\n\n// Extract sender\nconst from = webhookData.From || webhookData.from || '';\n\n// Handle case where Body might be empty\nif (!body || body === 'undefined' || body === 'null') {\n  return { \n    json: { \n      message: 'help',\n      from: from\n    } \n  };\n}\n\n// Parse the message\nconst message = body.toLowerCase().trim();\n\nreturn { \n  json: { \n    message: message,\n    from: from\n  } \n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        -848
+      ],
+      "id": "fb725655-933c-441b-ba6a-1dce9f9365eb",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "url": "https://api.openweathermap.org/data/2.5/weather?q=Raleigh&appid=YOUR_OPENWEATHERMAP_API_KEY&units=metric",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -336,
+        -336
+      ],
+      "id": "a81bf07f-83d7-4898-9159-41574321fc1f",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const weather = $input.first().json;\nconst temp = weather.main.temp;\nconst description = weather.weather[0].description;\nconst city = weather.name;\n\nreturn {\n  json: {\n    reply: `🌤️ Weather in ${city}: ${temp}°C, ${description}`\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        -336
+      ],
+      "id": "42e2ab64-ffde-4af8-8f9b-5c31d49cd029",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "url": "https://newsapi.org/v2/top-headlines?country=us&pageSize=3&apiKey=YOUR_NEWSAPI_KEY",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -320,
+        80
+      ],
+      "id": "192dcae0-5870-4522-b42e-c56b2384fb7b",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const news = $input.first().json;\nlet newsText = news.articles.slice(0, 3).map((article, index) => \n  `${index + 1}. ${article.title}`\n).join('\\n\\n');\n\nreturn {\n  json: {\n    reply: `📰 *Top News:*\\n\\n${newsText}`\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        80
+      ],
+      "id": "f5cfdcc5-b5f2-480e-985d-0af8d0cd17d4",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        736,
+        -128
+      ],
+      "id": "8daf753f-2f82-4a36-8a4b-ecb958cf6626",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "from": "YOUR_TWILIO_WHATSAPP_NUMBER",
+        "to": "YOUR_RECIPIENT_WHATSAPP_NUMBER",
+        "toWhatsapp": true,
+        "message": "={{ $json.message }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1168,
+        -128
+      ],
+      "id": "1e77fe26-f937-4baf-8984-b6eb19e54124",
+      "name": "Send an SMS/MMS/WhatsApp message",
+      "credentials": {
+        "twilioApi": {
+          "id": "F5Noi35vVuOvdjqp",
+          "name": "Twilio account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message }}",
+                    "rightValue": "weather",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "e935207a-35eb-42fd-b87a-126c058630ac"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "f7209ac3-041e-4eed-be8f-946e560e8040",
+                    "leftValue": "={{ $json.message }}",
+                    "rightValue": "news",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "none"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -880,
+        -64
+      ],
+      "id": "5c6dc768-b446-4354-90dd-6af440792c31",
+      "name": "Switch"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1466bb54-28c2-493b-a28e-37e5aa5697be",
+  "meta": {
+    "instanceId": "a18ad536101bf4a9a154e90f0b65fac8845de3aa5ebbeebcc4302bc1434d56a9"
+  },
+  "id": "fsBXWlRYtyaRiahs",
+  "tags": []
+}
